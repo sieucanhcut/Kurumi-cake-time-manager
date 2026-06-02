@@ -7,13 +7,9 @@ import { batchService } from "./services/batchService";
 function App() {
   const [batches, setBatches] = useState([]);
   const [search, setSearch] = useState("");
-const activeCount = batches.filter((batch) => {
-  return new Date(batch.expire_datetime) > new Date();
-}).length;
+  const [cakeFilter, setCakeFilter] =
+    useState("Tất cả");
 
-const expiredCount = batches.filter((batch) => {
-  return new Date(batch.expire_datetime) <= new Date();
-}).length;
   const loadData = async () => {
     const data = await batchService.getAll();
     setBatches(data);
@@ -33,11 +29,58 @@ const expiredCount = batches.filter((batch) => {
     loadData();
   };
 
-  const filteredBatches = batches.filter((batch) =>
-    batch.cake_name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const now = new Date();
 
-  const total = batches.length;
+  const activeCount = batches.filter(
+    (b) =>
+      new Date(b.expire_datetime) > now
+  ).length;
+
+  const warningCount = batches.filter(
+    (b) => {
+      const diff =
+        new Date(b.expire_datetime) -
+        now;
+
+      return (
+        diff > 0 &&
+        diff <=
+          24 * 60 * 60 * 1000
+      );
+    }
+  ).length;
+
+  const expiredCount = batches.filter(
+    (b) =>
+      new Date(b.expire_datetime) <= now
+  ).length;
+
+  const cakeTypes = [
+    "Tất cả",
+    ...new Set(
+      batches
+        .map((b) => b.cake_name)
+        .filter(Boolean)
+    ),
+  ];
+
+  const filteredBatches =
+    batches.filter((batch) => {
+      const matchSearch =
+        batch.cake_name
+          ?.toLowerCase()
+          .includes(
+            search.toLowerCase()
+          );
+
+      const matchCake =
+        cakeFilter === "Tất cả" ||
+        batch.cake_name === cakeFilter;
+
+      return (
+        matchSearch && matchCake
+      );
+    });
 
   return (
     <div className="container">
@@ -53,19 +96,56 @@ const expiredCount = batches.filter((batch) => {
 
       <div className="dashboard">
         <div className="stat-card">
-          <h3>Tổng lô bánh</h3>
-          <h2>{total}</h2>
+          <h3>📦 Tổng lô</h3>
+          <h2>{batches.length}</h2>
+        </div>
+
+        <div className="stat-card">
+          <h3>🟢 Còn hạn</h3>
+          <h2>{activeCount}</h2>
+        </div>
+
+        <div className="stat-card warning">
+          <h3>🟠 Sắp hết hạn</h3>
+          <h2>{warningCount}</h2>
+        </div>
+
+        <div className="stat-card danger">
+          <h3>🔴 Hết hạn</h3>
+          <h2>{expiredCount}</h2>
         </div>
       </div>
 
       <BatchForm onAdd={addBatch} />
+
+      <select
+        value={cakeFilter}
+        onChange={(e) =>
+          setCakeFilter(
+            e.target.value
+          )
+        }
+      >
+        {cakeTypes.map((cake) => (
+          <option
+            key={cake}
+            value={cake}
+          >
+            {cake}
+          </option>
+        ))}
+      </select>
 
       <input
         className="search-box"
         type="text"
         placeholder="🔍 Tìm theo tên bánh..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) =>
+          setSearch(
+            e.target.value
+          )
+        }
       />
 
       <BatchList
