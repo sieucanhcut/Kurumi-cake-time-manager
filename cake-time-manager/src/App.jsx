@@ -63,7 +63,12 @@ function App() {
         .filter(Boolean)
     ),
   ];
-
+const totalQuantity =
+  batches.reduce(
+    (sum, batch) =>
+      sum + (batch.quantity || 0),
+    0
+  );
   const filteredBatches =
     batches.filter((batch) => {
       const matchSearch =
@@ -97,8 +102,7 @@ function App() {
       <div className="dashboard">
         <div className="stat-card">
           <h3>📦 Tổng lô</h3>
-          <h2>{batches.length}</h2>
-        </div>
+<h2>{totalQuantity}</h2>        </div>
 
         <div className="stat-card">
           <h3>🟢 Còn hạn</h3>

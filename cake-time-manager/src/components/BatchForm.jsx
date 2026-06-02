@@ -7,7 +7,7 @@ function BatchForm({ onAdd }) {
   const [shelfLifeHours, setShelfLifeHours] = useState(48);
   const [employeeName, setEmployeeName] = useState("");
   const [note, setNote] = useState("");
-
+  const [quantity, setQuantity] = useState(1);
   const cakeOptions = [
     "Tiramisu",
     "Lime Spirulina",
@@ -72,6 +72,7 @@ function BatchForm({ onAdd }) {
       employee_name: employeeName,
       note,
       status: "active",
+      quantity: Number(quantity),
     });
 
     // reset form
@@ -81,6 +82,7 @@ function BatchForm({ onAdd }) {
     setShelfLifeHours(48);
     setEmployeeName("");
     setNote("");
+    setQuantity(1);
   };
 
   return (
@@ -119,7 +121,17 @@ function BatchForm({ onAdd }) {
         onChange={(e) => setCutDateTime(e.target.value)}
         required
       />
+      <label>🍰 Số lượng bánh</label>
 
+      <input
+        type="number"
+        min="1"
+        value={quantity}
+        onChange={(e) =>
+          setQuantity(e.target.value)
+        }
+        required
+      />
       <label style={styles.label}>⏰ Hạn sử dụng (giờ)</label>
       <input
         style={styles.input}

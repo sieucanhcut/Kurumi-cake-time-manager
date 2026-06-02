@@ -31,7 +31,13 @@ function BatchCard({ batch, onDelete }) {
           {new Date(batch.cut_datetime)
             .toLocaleString("vi-VN")}
         </p>
-
+        <p>
+          🍰 Số lượng:
+          {" "}
+          <strong>
+            {batch.quantity}
+          </strong>
+        </p>
         <p>
           ⏰ Hạn sử dụng:{" "}
           {new Date(batch.expire_datetime)
