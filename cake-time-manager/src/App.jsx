@@ -7,8 +7,7 @@ import { batchService } from "./services/batchService";
 function App() {
   const [batches, setBatches] = useState([]);
   const [search, setSearch] = useState("");
-  const [cakeFilter, setCakeFilter] =
-    useState("Tất cả");
+  const [cakeFilter, setCakeFilter] = useState("Tất cả");
 
   const loadData = async () => {
     const data = await batchService.getAll();
@@ -31,29 +30,27 @@ function App() {
 
   const now = new Date();
 
-  const activeCount = batches.filter(
-    (b) =>
-      new Date(b.expire_datetime) > now
-  ).length;
+  const warningCount = batches.filter((b) => {
+    const diff =
+      new Date(b.expire_datetime) - now;
 
-  const warningCount = batches.filter(
-    (b) => {
-      const diff =
-        new Date(b.expire_datetime) -
-        now;
-
-      return (
-        diff > 0 &&
-        diff <=
-          24 * 60 * 60 * 1000
-      );
-    }
-  ).length;
+    return (
+      diff > 0 &&
+      diff <= 24 * 60 * 60 * 1000
+    );
+  }).length;
 
   const expiredCount = batches.filter(
     (b) =>
       new Date(b.expire_datetime) <= now
   ).length;
+
+  const cakeTypeCount =
+    new Set(
+      batches
+        .map((b) => b.cake_name)
+        .filter(Boolean)
+    ).size;
 
   const cakeTypes = [
     "Tất cả",
@@ -63,12 +60,15 @@ function App() {
         .filter(Boolean)
     ),
   ];
-const totalQuantity =
-  batches.reduce(
-    (sum, batch) =>
-      sum + (batch.quantity || 0),
-    0
-  );
+
+  const cakeSummary = {};
+
+  batches.forEach((batch) => {
+    cakeSummary[batch.cake_name] =
+      (cakeSummary[batch.cake_name] || 0) +
+      (batch.quantity || 0);
+  });
+
   const filteredBatches =
     batches.filter((batch) => {
       const matchSearch =
@@ -102,11 +102,12 @@ const totalQuantity =
       <div className="dashboard">
         <div className="stat-card">
           <h3>📦 Tổng lô</h3>
-<h2>{totalQuantity}</h2>        </div>
+          <h2>{batches.length}</h2>
+        </div>
 
         <div className="stat-card">
-          <h3>🟢 Còn hạn</h3>
-          <h2>{activeCount}</h2>
+          <h3>🎂 Loại bánh</h3>
+          <h2>{cakeTypeCount}</h2>
         </div>
 
         <div className="stat-card warning">
@@ -120,14 +121,24 @@ const totalQuantity =
         </div>
       </div>
 
+      <div className="stat-card">
+        <h3>📊 Tồn kho theo loại</h3>
+
+        {Object.entries(cakeSummary).map(
+          ([cake, qty]) => (
+            <p key={cake}>
+              {cake}: <strong>{qty}</strong>
+            </p>
+          )
+        )}
+      </div>
+
       <BatchForm onAdd={addBatch} />
 
       <select
         value={cakeFilter}
         onChange={(e) =>
-          setCakeFilter(
-            e.target.value
-          )
+          setCakeFilter(e.target.value)
         }
       >
         {cakeTypes.map((cake) => (
@@ -146,9 +157,7 @@ const totalQuantity =
         placeholder="🔍 Tìm theo tên bánh..."
         value={search}
         onChange={(e) =>
-          setSearch(
-            e.target.value
-          )
+          setSearch(e.target.value)
         }
       />
 
