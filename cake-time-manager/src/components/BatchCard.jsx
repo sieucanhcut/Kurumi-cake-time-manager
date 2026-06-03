@@ -1,33 +1,23 @@
-function BatchCard({ batch, onDelete }) {
+function BatchCard({
+  batch,
+  onDelete,
+  onEdit,
+}) {
   const now = new Date();
-  const expire = new Date(batch.expire_datetime);
-
-  const diff = expire.getTime() - now.getTime();
-let countdown = "Đã hết hạn";
-
-if (diff > 0) {
-  const days = Math.floor(
-    diff / (1000 * 60 * 60 * 24)
+  const expire = new Date(
+    batch.expire_datetime
   );
 
-  const hours = Math.floor(
-    (diff % (1000 * 60 * 60 * 24)) /
-    (1000 * 60 * 60)
-  );
+  const diff =
+    expire.getTime() - now.getTime();
 
-  const minutes = Math.floor(
-    (diff % (1000 * 60 * 60)) /
-    (1000 * 60)
-  );
-
-  countdown =
-    `${days} ngày ${hours} giờ ${minutes} phút`;
-}
   let statusColor = "green";
 
   if (diff <= 0) {
     statusColor = "red";
-  } else if (diff < 24 * 60 * 60 * 1000) {
+  } else if (
+    diff < 24 * 60 * 60 * 1000
+  ) {
     statusColor = "orange";
   }
 
@@ -36,56 +26,100 @@ if (diff > 0) {
   );
 
   return (
-    <div className={`batch-card ${statusColor}`}>
+    <div
+      className={`batch-card ${statusColor}`}
+    >
       <div className="header">
         <h3>{batch.cake_name}</h3>
         <span>{batch.batch_code}</span>
       </div>
 
       <div className="info">
-        <p> Ngày nhận: {batch.production_date}</p>
+        <p>
+          📦 Ngày nhận:
+          {" "}
+          {batch.production_date}
+        </p>
 
         <p>
-           Ngày cắt:{" "}
-          {new Date(batch.cut_datetime)
-            .toLocaleString("vi-VN")}
+          ✂️ Ngày cắt:
+          {" "}
+          {new Date(
+            batch.cut_datetime
+          ).toLocaleString("vi-VN")}
         </p>
+
         <p>
-           Số lượng:
+          🍰 Số lượng:
           {" "}
           <strong>
             {batch.quantity}
           </strong>
         </p>
+
         <p>
-           Hạn sử dụng:{" "}
-          {new Date(batch.expire_datetime)
-            .toLocaleString("vi-VN")}
+          ⏰ Hạn sử dụng:
+          {" "}
+          {new Date(
+            batch.expire_datetime
+          ).toLocaleString("vi-VN")}
         </p>
 
         <p>
-           Còn lại:{" "}
+          ⌛ Còn lại:
+          {" "}
           {diff > 0
             ? `${hoursLeft} giờ`
             : "Đã hết hạn"}
         </p>
 
         <p>
-           Nhân viên cắt:{" "}
-          {batch.employee_name || "Chưa nhập"}
+          👤 Nhân viên cắt:
+          {" "}
+          {batch.employee_name ||
+            "Chưa nhập"}
         </p>
 
         <p>
-           Ghi chú:{" "}
-          {batch.note || "Không có"}
+          📝 Ghi chú:
+          {" "}
+          {batch.note ||
+            "Không có"}
         </p>
       </div>
 
-      <button
-        onClick={() => onDelete(batch.id)}
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "10px",
+        }}
       >
-        Xóa
-      </button>
+        <button
+          onClick={() => {
+            const ok =
+              window.confirm(
+                `Xóa lô ${batch.batch_code}?`
+              );
+
+            if (ok) {
+              onDelete(batch.id);
+            }
+          }}
+        >
+          🗑️ Xóa
+        </button>
+
+      <button
+  onClick={() => {
+    if (onEdit) {
+      onEdit(batch);
+    }
+  }}
+>
+  ✏️ Sửa
+</button>
+      </div>
     </div>
   );
 }
