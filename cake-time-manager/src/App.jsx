@@ -96,7 +96,7 @@ function App() {
       />
 
       <h1 className="title">
-        🎂 Quản Lý Hạn Sử Dụng Bánh
+         Quản Lý Hạn Sử Dụng Bánh
       </h1>
 
       <div className="dashboard">
@@ -122,7 +122,7 @@ function App() {
       </div>
 
       <div className="stat-card">
-        <h3>📊 Tồn kho theo loại</h3>
+        <h3> Tồn kho theo loại</h3>
 
         {Object.entries(cakeSummary).map(
           ([cake, qty]) => (

@@ -3,7 +3,26 @@ function BatchCard({ batch, onDelete }) {
   const expire = new Date(batch.expire_datetime);
 
   const diff = expire.getTime() - now.getTime();
+let countdown = "Đã hết hạn";
 
+if (diff > 0) {
+  const days = Math.floor(
+    diff / (1000 * 60 * 60 * 24)
+  );
+
+  const hours = Math.floor(
+    (diff % (1000 * 60 * 60 * 24)) /
+    (1000 * 60 * 60)
+  );
+
+  const minutes = Math.floor(
+    (diff % (1000 * 60 * 60)) /
+    (1000 * 60)
+  );
+
+  countdown =
+    `${days} ngày ${hours} giờ ${minutes} phút`;
+}
   let statusColor = "green";
 
   if (diff <= 0) {
@@ -24,28 +43,28 @@ function BatchCard({ batch, onDelete }) {
       </div>
 
       <div className="info">
-        <p>📦 Ngày nhận: {batch.production_date}</p>
+        <p> Ngày nhận: {batch.production_date}</p>
 
         <p>
-          ✂️ Ngày cắt:{" "}
+           Ngày cắt:{" "}
           {new Date(batch.cut_datetime)
             .toLocaleString("vi-VN")}
         </p>
         <p>
-          🍰 Số lượng:
+           Số lượng:
           {" "}
           <strong>
             {batch.quantity}
           </strong>
         </p>
         <p>
-          ⏰ Hạn sử dụng:{" "}
+           Hạn sử dụng:{" "}
           {new Date(batch.expire_datetime)
             .toLocaleString("vi-VN")}
         </p>
 
         <p>
-          ⌛ Còn lại:{" "}
+           Còn lại:{" "}
           {diff > 0
             ? `${hoursLeft} giờ`
             : "Đã hết hạn"}
@@ -57,7 +76,7 @@ function BatchCard({ batch, onDelete }) {
         </p>
 
         <p>
-          📝 Ghi chú:{" "}
+           Ghi chú:{" "}
           {batch.note || "Không có"}
         </p>
       </div>
