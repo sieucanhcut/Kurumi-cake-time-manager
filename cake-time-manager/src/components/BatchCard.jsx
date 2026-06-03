@@ -71,7 +71,7 @@ if (diff > 0) {
         </p>
 
         <p>
-          👤 Nhân viên cắt:{" "}
+           Nhân viên cắt:{" "}
           {batch.employee_name || "Chưa nhập"}
         </p>
 

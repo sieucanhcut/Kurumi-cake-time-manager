@@ -89,7 +89,7 @@ function BatchForm({ onAdd }) {
     <form onSubmit={handleSubmit} style={styles.form}>
       <h2 style={{ color: "#0f172a" }}>➕ Thêm lô bánh</h2>
 
-      <label style={styles.label}>🍰 Loại bánh</label>
+      <label style={styles.label}> Loại bánh</label>
       <select
         style={styles.input}
         value={cakeName}
@@ -104,7 +104,7 @@ function BatchForm({ onAdd }) {
         ))}
       </select>
 
-      <label style={styles.label}>📦 Ngày nhận bánh</label>
+      <label style={styles.label}> Ngày nhận bánh</label>
       <input
         style={styles.input}
         type="date"
@@ -113,7 +113,7 @@ function BatchForm({ onAdd }) {
         required
       />
 
-      <label style={styles.label}>✂️ Ngày giờ cắt bánh</label>
+      <label style={styles.label}> Ngày giờ cắt bánh</label>
       <input
         style={styles.input}
         type="datetime-local"
@@ -121,7 +121,7 @@ function BatchForm({ onAdd }) {
         onChange={(e) => setCutDateTime(e.target.value)}
         required
       />
-      <label>🍰 Số lượng bánh</label>
+      <label> Số lượng bánh</label>
 
       <input
         type="number"
@@ -132,7 +132,7 @@ function BatchForm({ onAdd }) {
         }
         required
       />
-      <label style={styles.label}>⏰ Hạn sử dụng (giờ)</label>
+      <label style={styles.label}> Hạn sử dụng (giờ)</label>
       <input
         style={styles.input}
         type="number"
@@ -142,7 +142,7 @@ function BatchForm({ onAdd }) {
         required
       />
 
-      <label style={styles.label}>👤 Nhân viên cắt</label>
+      <label style={styles.label}> Nhân viên cắt</label>
       <input
         style={styles.input}
         type="text"
@@ -151,7 +151,7 @@ function BatchForm({ onAdd }) {
         onChange={(e) => setEmployeeName(e.target.value)}
       />
 
-      <label style={styles.label}>📝 Ghi chú</label>
+      <label style={styles.label}> Ghi chú</label>
       <textarea
         style={styles.input}
         placeholder="Ghi chú..."
@@ -160,7 +160,7 @@ function BatchForm({ onAdd }) {
       />
 
       <button type="submit" style={styles.button}>
-        💾 Lưu
+         Lưu
       </button>
     </form>
   );
