@@ -3,6 +3,7 @@ import logo from "./assets/logo.jpg";
 import BatchForm from "./components/BatchForm";
 import BatchList from "./components/BatchList";
 import { batchService } from "./services/batchService";
+import { supabase } from "./lib/supabase";
 
 function App() {
   const [batches, setBatches] = useState([]);
@@ -11,14 +12,28 @@ function App() {
   const [receivedFilter, setReceivedFilter] = useState("");
   const [cutFilter, setCutFilter] = useState("");
   const [editingBatch, setEditingBatch] = useState(null);
-
+  const [scheduleImage, setScheduleImage] = useState("");
+const [showSchedule, setShowSchedule] = useState(true);
   const loadData = async () => {
     const data = await batchService.getAll();
     setBatches(data);
   };
 
+  const loadScheduleImage = async () => {
+    const { data, error } = await supabase
+      .from("weekly_schedule")
+      .select("*")
+      .eq("id", 1)
+      .single();
+
+    if (!error && data?.image_url) {
+      setScheduleImage(data.image_url);
+    }
+  };
+
   useEffect(() => {
     loadData();
+    loadScheduleImage();
   }, []);
 
   const addBatch = async (batch) => {
@@ -26,17 +41,60 @@ function App() {
     loadData();
   };
 
-const updateBatch = async (id, batch) => {
-  await batchService.update(id, batch);
-
-  setEditingBatch(null);
-
-  loadData();
-};
+  const updateBatch = async (id, batch) => {
+    await batchService.update(id, batch);
+    setEditingBatch(null);
+    loadData();
+  };
 
   const deleteBatch = async (id) => {
     await batchService.delete(id);
     loadData();
+  };
+
+  const uploadScheduleImage = async (file) => {
+    try {
+      const fileName = `schedule-${Date.now()}-${file.name}`;
+
+      const { error: uploadError } =
+        await supabase.storage
+          .from("schedule_images")
+          .upload(fileName, file, {
+            cacheControl: "3600",
+            upsert: true,
+          });
+
+      if (uploadError) {
+        alert(uploadError.message);
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("schedule_images")
+        .getPublicUrl(fileName);
+
+      const imageUrl = data.publicUrl;
+
+      const { error: dbError } =
+        await supabase
+          .from("weekly_schedule")
+          .update({
+            image_url: imageUrl,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", 1);
+
+      if (dbError) {
+        alert(dbError.message);
+        return;
+      }
+
+      setScheduleImage(imageUrl);
+      alert("Đã cập nhật lịch làm!");
+    } catch (err) {
+      console.error(err);
+      alert("Có lỗi xảy ra khi upload ảnh.");
+    }
   };
 
   const now = new Date();
@@ -77,36 +135,34 @@ const updateBatch = async (id, batch) => {
       (batch.quantity || 0);
   });
 
-  const filteredBatches = batches.filter(
-    (batch) => {
-      const matchSearch =
-        batch.cake_name
-          ?.toLowerCase()
-          .includes(search.toLowerCase());
+  const filteredBatches = batches.filter((batch) => {
+    const matchSearch =
+      batch.cake_name
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
 
-      const matchCake =
-        cakeFilter === "Tất cả" ||
-        batch.cake_name === cakeFilter;
+    const matchCake =
+      cakeFilter === "Tất cả" ||
+      batch.cake_name === cakeFilter;
 
-      const matchReceived =
-        !receivedFilter ||
-        batch.production_date === receivedFilter;
+    const matchReceived =
+      !receivedFilter ||
+      batch.production_date === receivedFilter;
 
-      const cutDate =
-        batch.cut_datetime?.split("T")[0];
+    const cutDate =
+      batch.cut_datetime?.split("T")[0];
 
-      const matchCut =
-        !cutFilter ||
-        cutDate === cutFilter;
+    const matchCut =
+      !cutFilter ||
+      cutDate === cutFilter;
 
-      return (
-        matchSearch &&
-        matchCake &&
-        matchReceived &&
-        matchCut
-      );
-    }
-  );
+    return (
+      matchSearch &&
+      matchCake &&
+      matchReceived &&
+      matchCut
+    );
+  });
 
   return (
     <div className="container">
@@ -116,9 +172,74 @@ const updateBatch = async (id, batch) => {
         className="logo-fixed"
       />
 
-      <h1 className="title">
-        🎂 Quản Lý Hạn Sử Dụng Bánh
-      </h1>
+<div className="stat-card">
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      cursor: "pointer",
+    }}
+    onClick={() =>
+      setShowSchedule(!showSchedule)
+    }
+  >
+    <h3>📅 Lịch làm tuần này</h3>
+
+    <span
+      style={{
+        fontSize: "24px",
+        transition: "0.3s",
+        transform: showSchedule
+          ? "rotate(180deg)"
+          : "rotate(0deg)",
+      }}
+    >
+      ▼
+    </span>
+  </div>
+
+  <div
+    style={{
+      maxHeight: showSchedule
+        ? "1000px"
+        : "0px",
+      overflow: "hidden",
+      transition:
+        "max-height 0.4s ease",
+    }}
+  >
+    <input
+      type="file"
+      accept="image/*"
+      onChange={(e) => {
+        const file =
+          e.target.files?.[0];
+
+        if (file) {
+          uploadScheduleImage(file);
+        }
+      }}
+      style={{
+        marginTop: "10px",
+      }}
+    />
+
+    {scheduleImage && (
+      <img
+        src={scheduleImage}
+        alt="Lịch làm"
+        style={{
+          width: "100%",
+          marginTop: "10px",
+          borderRadius: "10px",
+          maxHeight: "700px",
+          objectFit: "contain",
+        }}
+      />
+    )}
+  </div>
+</div>
 
       <div className="dashboard">
         <div className="stat-card">
@@ -237,4 +358,4 @@ const updateBatch = async (id, batch) => {
   );
 }
 
-export default App;
+export default App; 
