@@ -14,6 +14,8 @@ function App() {
   const [editingBatch, setEditingBatch] = useState(null);
   const [scheduleImage, setScheduleImage] = useState("");
 const [showSchedule, setShowSchedule] = useState(true);
+const [rotation, setRotation] = useState(0);
+const [showImageModal, setShowImageModal] = useState(false);
   const loadData = async () => {
     const data = await batchService.getAll();
     setBatches(data);
@@ -224,20 +226,47 @@ const [showSchedule, setShowSchedule] = useState(true);
         marginTop: "10px",
       }}
     />
+<button
+  onClick={() =>
+    setRotation((prev) => (prev + 90) % 360)
+  }
+  style={{
+    marginTop: "10px",
+    padding: "8px 12px",
+  }}
+>
+  🔄 Xoay ảnh
+</button>
+ {scheduleImage && (
+  <div
+    style={{
+      textAlign: "center",
+      marginTop: "10px",
+    }}
+  >
+    <img
+      src={scheduleImage}
+      alt="Lịch làm"
+      onClick={() => setShowImageModal(true)}
+      style={{
+        width: "300px",
+        maxWidth: "100%",
+        borderRadius: "10px",
+        cursor: "pointer",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+      }}
+    />
 
-    {scheduleImage && (
-      <img
-        src={scheduleImage}
-        alt="Lịch làm"
-        style={{
-          width: "100%",
-          marginTop: "10px",
-          borderRadius: "10px",
-          maxHeight: "700px",
-          objectFit: "contain",
-        }}
-      />
-    )}
+    <p
+      style={{
+        fontSize: "12px",
+        color: "#666",
+      }}
+    >
+      Nhấn vào ảnh để phóng to
+    </p>
+  </div>
+)}
   </div>
 </div>
 
@@ -354,6 +383,61 @@ const [showSchedule, setShowSchedule] = useState(true);
         onDelete={deleteBatch}
         onEdit={setEditingBatch}
       />
+      {showImageModal && (
+  <div
+    onClick={() => setShowImageModal(false)}
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.85)",
+      zIndex: 9999,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+      padding: "20px",
+    }}
+  >
+<div
+  onClick={(e) => e.stopPropagation()}
+  style={{
+    position: "fixed",
+    top: "20px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    gap: "10px",
+    zIndex: 10000,
+  }}
+>
+  <button
+    onClick={() =>
+      setRotation((prev) => (prev + 90) % 360)
+    }
+  >
+    🔄 Xoay ảnh
+  </button>
+
+  <button
+    onClick={() => setShowImageModal(false)}
+  >
+    ✖ Đóng
+  </button>
+</div>
+
+   <img
+  src={scheduleImage}
+  alt="Lịch làm"
+  style={{
+    maxWidth: "90vw",
+    maxHeight: "80vh",
+    borderRadius: "10px",
+    transform: `rotate(${rotation}deg)`,
+    transition: "transform 0.3s ease",
+  }}
+/>
+  </div>
+)}
     </div>
   );
 }
