@@ -383,61 +383,70 @@ const [showImageModal, setShowImageModal] = useState(false);
         onDelete={deleteBatch}
         onEdit={setEditingBatch}
       />
-      {showImageModal && (
-  <div
-    onClick={() => setShowImageModal(false)}
-    style={{
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.85)",
-      zIndex: 9999,
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column",
-      padding: "20px",
-    }}
-  >
-<div
-  onClick={(e) => e.stopPropagation()}
-  style={{
-    position: "fixed",
-    top: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    display: "flex",
-    gap: "10px",
-    zIndex: 10000,
-  }}
->
-  <button
-    onClick={() =>
-      setRotation((prev) => (prev + 90) % 360)
-    }
-  >
-    🔄 Xoay ảnh
-  </button>
+{
+  showImageModal && (
+    <div
+      onClick={() => setShowImageModal(false)}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.9)",
+        zIndex: 9999,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* Thanh công cụ */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "12px",
+          gap: "10px",
+        }}
+      >
+        <button
+          onClick={() =>
+            setRotation((prev) => (prev + 90) % 360)
+          }
+        >
+          🔄 Xoay
+        </button>
 
-  <button
-    onClick={() => setShowImageModal(false)}
-  >
-    ✖ Đóng
-  </button>
-</div>
+        <button
+          onClick={() => setShowImageModal(false)}
+        >
+          ✖ Đóng
+        </button>
+      </div>
 
-   <img
-  src={scheduleImage}
-  alt="Lịch làm"
-  style={{
-    maxWidth: "90vw",
-    maxHeight: "80vh",
-    borderRadius: "10px",
-    transform: `rotate(${rotation}deg)`,
-    transition: "transform 0.3s ease",
-  }}
-/>
-  </div>
-)}
+      {/* Ảnh */}
+      <div
+        style={{
+          flex: 1,
+          overflow: "auto",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "10px",
+        }}
+      >
+        <img
+          src={scheduleImage}
+          alt="Lịch làm"
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            objectFit: "contain",
+            transform: `rotate(${rotation}deg)`,
+            transition: "transform .3s",
+          }}
+        />
+      </div>
+    </div>
+  )
+}
     </div>
   );
 }
