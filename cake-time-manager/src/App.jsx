@@ -6,6 +6,7 @@ import { batchService } from "./services/batchService";
 import { supabase } from "./lib/supabase";
 
 function App() {
+  
   const [batches, setBatches] = useState([]);
   const [search, setSearch] = useState("");
   const [cakeFilter, setCakeFilter] = useState("Tất cả");
@@ -14,7 +15,7 @@ function App() {
   const [editingBatch, setEditingBatch] = useState(null);
   const [scheduleImage, setScheduleImage] = useState("");
 const [showSchedule, setShowSchedule] = useState(true);
-const [rotation, setRotation] = useState(0);
+const [modalRotation, setModalRotation] = useState(0);
 const [showImageModal, setShowImageModal] = useState(false);
   const loadData = async () => {
     const data = await batchService.getAll();
@@ -226,17 +227,7 @@ const [showImageModal, setShowImageModal] = useState(false);
         marginTop: "10px",
       }}
     />
-<button
-  onClick={() =>
-    setRotation((prev) => (prev + 90) % 360)
-  }
-  style={{
-    marginTop: "10px",
-    padding: "8px 12px",
-  }}
->
-  🔄 Xoay ảnh
-</button>
+
  {scheduleImage && (
   <div
     style={{
@@ -244,15 +235,17 @@ const [showImageModal, setShowImageModal] = useState(false);
       marginTop: "10px",
     }}
   >
- <img
+<img
   src={scheduleImage}
   alt="Lịch làm"
   onClick={() => setShowImageModal(true)}
   style={{
-    maxWidth: "100%",
-    maxHeight: "400px",
+   width: "auto",
+height: "auto",
+maxWidth: "95vw",
+maxHeight: "85vh",
     objectFit: "contain",
-    transform: `rotate(${rotation}deg)`,
+    transform: `rotate(0deg)`,
     transition: "transform 0.3s ease",
     cursor: "pointer",
   }}
@@ -384,72 +377,81 @@ const [showImageModal, setShowImageModal] = useState(false);
         onDelete={deleteBatch}
         onEdit={setEditingBatch}
       />
-{
-  showImageModal && (
+{showImageModal && (
+  <div
+    onClick={() => {
+      setShowImageModal(false);
+      setModalRotation(0);
+    }}
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.95)",
+      zIndex: 99999,
+      width: "100vw",
+      height: "100dvh",
+    }}
+  >
     <div
-      onClick={() => setShowImageModal(false)}
+      onClick={(e) => e.stopPropagation()}
       style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.9)",
-        zIndex: 9999,
+        position: "absolute",
+        top: "12px",
+        left: "12px",
+        right: "12px",
         display: "flex",
-        flexDirection: "column",
+        justifyContent: "space-between",
+        zIndex: 100000,
       }}
     >
-      {/* Thanh công cụ */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "12px",
-          gap: "10px",
+      <button
+        onClick={() =>
+          setModalRotation(
+            (prev) => (prev + 90) % 360
+          )
+        }
+      >
+        🔄 Xoay
+      </button>
+
+      <button
+        onClick={() => {
+          setShowImageModal(false);
+          setModalRotation(0);
         }}
       >
-        <button
-          onClick={() =>
-            setRotation((prev) => (prev + 90) % 360)
-          }
-        >
-          🔄 Xoay
-        </button>
-
-        <button
-          onClick={() => setShowImageModal(false)}
-        >
-          ✖ Đóng
-        </button>
-      </div>
-
-      {/* Ảnh */}
- <div
-  onClick={(e) => e.stopPropagation()}
-  style={{
-    flex: 1,
-    overflow: "auto",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "10px",
-  }}
->
-<img
-  src={scheduleImage}
-  alt="Lịch làm"
-  style={{
-    maxWidth: "95vw",
-    maxHeight: "85vh",
-    objectFit: "contain",
-    transform: `rotate(${rotation}deg)`,
-    transition: "transform 0.3s ease",
-  }}
-/>
-
-      </div>
+        ✖ Đóng
+      </button>
     </div>
-  )
-}
+
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position: "absolute",
+        inset: "70px 0 0 0",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        overflow: "auto",
+        padding: "10px",
+      }}
+    >
+      <img
+        src={scheduleImage}
+        alt="Lịch làm"
+        style={{
+          width: "100%",
+          height: "100%",
+          maxWidth: "100vw",
+          maxHeight: "calc(100dvh - 90px)",
+          objectFit: "contain",
+          transform: `rotate(${modalRotation}deg)`,
+          transition: "transform 0.3s ease",
+        }}
+      />
+    </div>
+  </div>
+)}
     </div>
   );
 }
