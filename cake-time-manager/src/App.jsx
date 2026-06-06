@@ -244,18 +244,19 @@ const [showImageModal, setShowImageModal] = useState(false);
       marginTop: "10px",
     }}
   >
-    <img
-      src={scheduleImage}
-      alt="Lịch làm"
-      onClick={() => setShowImageModal(true)}
-      style={{
-        width: "300px",
-        maxWidth: "100%",
-        borderRadius: "10px",
-        cursor: "pointer",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-      }}
-    />
+ <img
+  src={scheduleImage}
+  alt="Lịch làm"
+  onClick={() => setShowImageModal(true)}
+  style={{
+    maxWidth: "100%",
+    maxHeight: "400px",
+    objectFit: "contain",
+    transform: `rotate(${rotation}deg)`,
+    transition: "transform 0.3s ease",
+    cursor: "pointer",
+  }}
+/>
 
     <p
       style={{
@@ -422,27 +423,29 @@ const [showImageModal, setShowImageModal] = useState(false);
       </div>
 
       {/* Ảnh */}
-      <div
-        style={{
-          flex: 1,
-          overflow: "auto",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "10px",
-        }}
-      >
-        <img
-          src={scheduleImage}
-          alt="Lịch làm"
-          style={{
-            maxWidth: "100%",
-            maxHeight: "100%",
-            objectFit: "contain",
-            transform: `rotate(${rotation}deg)`,
-            transition: "transform .3s",
-          }}
-        />
+ <div
+  onClick={(e) => e.stopPropagation()}
+  style={{
+    flex: 1,
+    overflow: "auto",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "10px",
+  }}
+>
+<img
+  src={scheduleImage}
+  alt="Lịch làm"
+  style={{
+    maxWidth: "95vw",
+    maxHeight: "85vh",
+    objectFit: "contain",
+    transform: `rotate(${rotation}deg)`,
+    transition: "transform 0.3s ease",
+  }}
+/>
+
       </div>
     </div>
   )
