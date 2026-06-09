@@ -25,6 +25,7 @@ function BatchForm({
     "Bánh Chuối",
     "Biscoff",
     "Dubai Chocolate",
+    "Caramel chocolate cake",
   ];
 
   useEffect(() => {
