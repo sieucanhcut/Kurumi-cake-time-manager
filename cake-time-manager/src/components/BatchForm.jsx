@@ -26,6 +26,15 @@ function BatchForm({
     "Biscoff",
     "Dubai Chocolate",
     "Caramel chocolate cake",
+    "Carrot cake",
+    "Raspeberry Chocolate",
+    "Classic truffle",
+    "date truffle",
+    "Choco bliss ball",
+    "Peanut bliss ball",
+    "protein ball",
+    "Russian candy",
+    "Pumpking seed bar",
   ];
 
   useEffect(() => {
